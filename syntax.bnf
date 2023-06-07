@@ -1,6 +1,6 @@
 syntax = line | line syntax
-line = rule | opt-ws eol
-rule = opt-ws symbol opt-ws '=' opt-ws expression opt-ws eol
+line = rule eol | opt-ws eol
+rule = opt-ws symbol opt-ws '=' opt-ws expression opt-ws
 expression = sequence | sequence opt-ws '|' opt-ws expression
 sequence = term | term ws sequence
 term = symbol | literal
