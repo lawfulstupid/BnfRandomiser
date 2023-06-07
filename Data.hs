@@ -1,5 +1,7 @@
 module BnfRandomiser.Data (
+   Randomise(..),
    module BnfRandomiser.Data.Ruleset,
+   module BnfRandomiser.Data.Rule,
    module BnfRandomiser.Data.Expression,
    module BnfRandomiser.Data.Sequence,
    module BnfRandomiser.Data.Term,
@@ -7,6 +9,7 @@ module BnfRandomiser.Data (
 ) where
 
 import BnfRandomiser.Data.Ruleset
+import BnfRandomiser.Data.Rule
 import BnfRandomiser.Data.Expression
 import BnfRandomiser.Data.Sequence
 import BnfRandomiser.Data.Term
@@ -14,6 +17,9 @@ import BnfRandomiser.Data.Symbol
 
 import AbLib.System.Random (pick)
 import Data.Map.Lazy (Map, (!), (!?))
+
+class Randomise a where
+   randomise :: Ruleset -> a -> IO String
 
 instance Randomise Expression where
    randomise mem (Expr opts) = do
