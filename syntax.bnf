@@ -1,19 +1,19 @@
 syntax = line | line syntax
 line = rule | opt-ws eol
-rule = opt-ws symbol opt-ws "=" opt-ws expression opt-ws eol
-expression = sequence | sequence opt-ws "|" opt-ws expression
+rule = opt-ws symbol opt-ws '=' opt-ws expression opt-ws eol
+expression = sequence | sequence opt-ws '|' opt-ws expression
 sequence = term | term ws sequence
 term = symbol | literal
 symbol = letter | symbol symchar
 literal = "'" string1 "'" | '"' string2 '"'
-string1 = "" | char1 string1
-string2 = "" | char2 string2
-letter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
-digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-symchar = letter | digit | "_" | "-"
-anychar = symchar | "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "`" | "{" | "}" | "~"
+string1 = '' | char1 string1
+string2 = '' | char2 string2
+letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
+digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+symchar = letter | digit | '_' | '-'
+anychar = symchar | '|' | ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' | '*' | '+' | ',' | '.' | '/' | ':' | ';' | '>' | '=' | '<' | '?' | '@' | '[' | '\' | ']' | '^' | '`' | '{' | '}' | '~'
 char1 = anychar | '"'
 char2 = anychar | "'"
-ws = " " opt-ws
-opt-ws = "" | ws
-eol = "\n" | "\r\f"
+ws = ' ' opt-ws
+opt-ws = '' | ws
+eol = '\n' | '\r\f'
