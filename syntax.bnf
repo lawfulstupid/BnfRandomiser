@@ -1,7 +1,7 @@
 syntax = line | line syntax
-line = line-content eol
-line-content = opt-ws | rule
-rule = opt-ws symbol opt-ws '=' opt-ws expression opt-ws
+line = opt-ws line-content opt-ws eol
+line-content = opt-ws | rule | '!' opt-ws command
+rule = symbol opt-ws '=' opt-ws expression
 expression = sequence | sequence opt-ws '|' opt-ws expression
 sequence = term | term ws sequence
 term = symbol | literal
@@ -12,9 +12,12 @@ string2 = '' | char2 string2
 letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 symchar = letter | digit | '_' | '-'
-anychar = symchar | '|' | ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' | '*' | '+' | ',' | '.' | '/' | ':' | ';' | '>' | '=' | '<' | '?' | '@' | '[' | '\' | ']' | '^' | '`' | '{' | '}' | '~'
+anychar = symchar | '|' | ' ' | '#' | '$' | '%' | '&' | '(' | ')' | '*' | '+' | ',' | '.' | '/' | ':' | ';' | '>' | '=' | '<' | '?' | '@' | '[' | '\' | ']' | '^' | '`' | '{' | '}' | '~'
 char1 = anychar | '"'
 char2 = anychar | "'"
 ws = ' ' opt-ws
 opt-ws = '' | ws
 eol = '\n' | '\r\f'
+command = 'generate' ws symbol
+
+!generate rule

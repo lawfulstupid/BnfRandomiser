@@ -16,7 +16,7 @@ memory = unsafePerformIO $ newIORef Map.empty
 load :: String -> IO ()
 load filename = do
    fileContents <- readFile filename
-   let ruleset = parseRuleset fileContents
+   let ruleset = makeRuleset $ parseFile fileContents
    writeIORef memory ruleset
 
 -- generates a value from loaded file
@@ -24,11 +24,19 @@ load filename = do
 gen :: Symbol -> IO String
 gen symbol = do
    ruleset <- readIORef memory
-   case ruleset !? symbol of
-      Nothing -> errorWithoutStackTrace ("symbol '" ++ symbol ++ "' does not exist")
-      Just expr -> randomise ruleset expr
+   randomise ruleset (Sym symbol)
 
 -- runs a bnf including `generate` commands without saving to memory
 -- arguments: filename
 run :: String -> IO ()
-run = undefined
+run filename = do
+   fileContents <- readFile filename
+   let lines = parseFile fileContents
+   let ruleset = makeRuleset lines
+   let cmds = makeCommandSet lines 
+   forM_ cmds $ \cmd -> uncurry execute cmd ruleset
+
+execute :: CommandType -> Args -> Ruleset -> IO ()
+execute Generate [symbol] mem = do
+   output <- randomise mem (Sym symbol)
+   putStrLn output

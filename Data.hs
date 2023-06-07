@@ -1,15 +1,13 @@
 module BnfRandomiser.Data (
    Randomise(..),
-   module BnfRandomiser.Data.Ruleset,
-   module BnfRandomiser.Data.Rule,
+   module BnfRandomiser.Data.File,
    module BnfRandomiser.Data.Expression,
    module BnfRandomiser.Data.Sequence,
    module BnfRandomiser.Data.Term,
    module BnfRandomiser.Data.Symbol
 ) where
 
-import BnfRandomiser.Data.Ruleset
-import BnfRandomiser.Data.Rule
+import BnfRandomiser.Data.File
 import BnfRandomiser.Data.Expression
 import BnfRandomiser.Data.Sequence
 import BnfRandomiser.Data.Term
