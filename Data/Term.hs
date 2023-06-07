@@ -9,12 +9,16 @@ data Term = Sym Symbol | Lit String
    deriving (Show, Eq)
 
 instance (MonadPlus m, Foldable m) => Parse m Char Term where
-   parser = do peek anyChar >>= \nextChar -> if nextChar == '"' || nextChar == '\'' then literalParser else fmap Sym symbolParser
+   parser = do
+      nextChar <- peek anyChar
+      if nextChar == '"' || nextChar == '\''
+         then Lit <$> literalParser
+         else Sym <$> symbolParser
 
-literalParser :: (MonadPlus m, Foldable m) => Parser m Char Term
+literalParser :: (MonadPlus m, Foldable m) => Parser m Char String
 literalParser = aux '"' <|> aux '\'' where
    aux q = do
       char q
       s <- greedy $ many $ charThat (/= q)
       char q
-      pure $ Lit s
+      pure s
