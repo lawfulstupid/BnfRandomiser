@@ -1,23 +1,32 @@
 module BnfRandomiser.Main (load, gen, run) where
 
 import BnfRandomiser.Data
+import GHC.IO
 import Data.IORef
+import YAMP.Module
 
 import Data.Map.Lazy (Map, (!), (!?))
 import qualified Data.Map.Lazy as Map
 
-ruleset :: IO (IORef Ruleset)
-ruleset = newIORef Map.empty
+memory :: IORef Ruleset
+memory = unsafePerformIO $ newIORef Map.empty
 
 -- loads a bnf file into memory
 -- arguments: filename
 load :: String -> IO ()
-load = undefined
+load filename = do
+   fileContents <- readFile filename
+   let ruleset = parseRuleset fileContents
+   writeIORef memory ruleset
 
 -- generates a value from loaded file
--- arguments: smybol to generate
+-- arguments: symbol to generate
 gen :: Symbol -> IO String
-gen = undefined
+gen symbol = do
+   ruleset <- readIORef memory
+   case ruleset !? symbol of
+      Nothing -> errorWithoutStackTrace ("symbol '" ++ symbol ++ "' does not exist")
+      Just expr -> randomise ruleset expr
 
 -- runs a bnf including `generate` commands without saving to memory
 -- arguments: filename
