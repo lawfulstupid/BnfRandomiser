@@ -5,8 +5,8 @@ import GHC.IO
 import Data.IORef
 import YAMP.Module
 
-import Data.Map.Lazy (Map, (!), (!?))
-import qualified Data.Map.Lazy as Map
+import Data.Map.Strict (Map, (!), (!?))
+import qualified Data.Map.Strict as Map
 
 memory :: IORef Ruleset
 memory = unsafePerformIO $ newIORef Map.empty

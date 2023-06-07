@@ -7,8 +7,8 @@ import BnfRandomiser.Data.Expression
 import BnfRandomiser.Data.Symbol
 import YAMP.Module
 
-import Data.Map.Lazy (Map)
-import qualified Data.Map.Lazy as Map
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
 
 type Ruleset = Map Symbol Expression
 

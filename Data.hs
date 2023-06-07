@@ -16,7 +16,7 @@ import BnfRandomiser.Data.Term
 import BnfRandomiser.Data.Symbol
 
 import AbLib.System.Random (pick)
-import Data.Map.Lazy (Map, (!), (!?))
+import Data.Map.Strict (Map, (!), (!?))
 
 class Randomise a where
    randomise :: Ruleset -> a -> IO String
