@@ -8,17 +8,14 @@ import YAMP.Module
 import Data.Map.Strict (Map, (!), (!?))
 import qualified Data.Map.Strict as Map
 
-
-
 memory :: IORef Ruleset
 memory = unsafePerformIO $ newIORef Map.empty
 
 -- loads a bnf file into memory
--- arguments: filename
-load :: String -> IO ()
-load filename = do
-   fileContents <- readFile filename
-   (ruleset, _) <- processFile filename $ parseFile fileContents
+load :: FilePath -> IO ()
+load path = do
+   file <- readFile path
+   (ruleset, _) <- processFile path $ parseFile file
    writeIORef memory ruleset
 
 -- generates a value from loaded file
@@ -29,14 +26,12 @@ gen symbol = do
    randomise ruleset (Sym symbol)
 
 -- runs a bnf including `generate` commands without saving to memory
--- arguments: filename
-run :: String -> IO ()
-run filename = do
-   fileContents <- readFile filename
-   (ruleset, cmdset) <- processFile filename $ parseFile fileContents
+run :: FilePath -> IO ()
+run path = do
+   file <- readFile path
+   (ruleset, cmdset) <- processFile path $ parseFile file
    forM_ cmdset $ \cmd -> uncurry execute cmd ruleset
    where
-   
    execute :: CommandType -> Args -> Ruleset -> IO ()
    execute Generate [symbol] mem = do
       output <- randomise mem (Sym symbol)
