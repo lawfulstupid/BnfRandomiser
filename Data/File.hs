@@ -7,6 +7,7 @@ import BnfRandomiser.Data.Symbol
 import BnfRandomiser.Data.Term
 import Data.Maybe (catMaybes)
 import Data.List
+import Data.Char (isSpace)
 import YAMP.Module
 
 data Line = Rule Symbol Expression | Load Symbol FilePath | Command CommandType Args
@@ -22,6 +23,7 @@ instance (MonadPlus m, Foldable m) => Parse m Char Line where
       c <- peek anyChar
       line <- if c == '!' then cmdParser else ruleParser <|> loadParser
       optional hspace
+      optional commentParser
       pure line
       where
       
@@ -29,8 +31,15 @@ instance (MonadPlus m, Foldable m) => Parse m Char Line where
          char '!'
          optional hspace
          cmdtype <- parser
-         args <- many (hspace >> blackspace)
+         args <- many (hspace >> argParser)
          pure $ Command cmdtype args
+      
+      argParser = literalParser <|> do
+         arg <- anyString
+         guard (length arg > 0)
+         guard $ not $ isPrefixOf "--" arg
+         guard $ not $ any isSpace arg
+         pure arg
       
       ruleParser = do
          sym <- symbolParser
@@ -47,6 +56,8 @@ instance (MonadPlus m, Foldable m) => Parse m Char Line where
          optional hspace
          file <- literalParser
          pure $ Load sym file
+      
+      commentParser = string "--" >> greedy line
 
 instance MonadPlus m => Parse m Char CommandType where
    parser = match "generate" >> pure Generate

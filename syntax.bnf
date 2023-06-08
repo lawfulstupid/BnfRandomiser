@@ -1,4 +1,4 @@
-syntax = line | line syntax
+syntax = line | line syntax -- structure for the whole file
 line = opt-ws line-content opt-ws eol
 line-content = opt-ws | rule | '!' opt-ws command
 rule = symbol opt-ws '=' opt-ws expression
@@ -20,4 +20,4 @@ opt-ws = '' | ws
 eol = '\n' | '\r\f'
 command = 'generate' ws symbol
 
-!generate rule
+!generate rule -- when this file is run, a randomly generated rule will be output
