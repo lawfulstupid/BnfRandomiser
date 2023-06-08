@@ -17,7 +17,7 @@ import qualified Data.List as List
 import Data.Map.Strict (Map, (!?))
 import qualified Data.Map.Strict as Map
 
-import AbLib.System.Random (pick)
+import AbLib.System.Random (pickWeighted)
 import Data.Map.Strict (Map, (!), (!?))
 
 class Randomise a where
@@ -25,11 +25,11 @@ class Randomise a where
 
 instance Randomise Expression where
    randomise mem (Expr opts) = do
-      seq <- pick opts
+      seq <- pickWeighted getWeight opts
       randomise mem seq
 
 instance Randomise Sequence where
-   randomise mem (Seq terms) = fmap concat $ sequence $ map (randomise mem) terms
+   randomise mem (Seq terms _) = fmap concat $ sequence $ map (randomise mem) terms
 
 instance Randomise Term where
    randomise _ (Lit str) = pure str
@@ -57,6 +57,6 @@ processFile path lines = do
    processLoad :: FilePath -> Line -> IO Line
    processLoad dir (Load sym filename) = do
       fileContents <- readFile (dir ++ filename)
-      let expr = Expr $ map (\opt -> Seq [Lit opt]) $ List.lines fileContents
+      let expr = Expr $ map (\opt -> Seq [Lit opt] 1) $ List.lines fileContents
       pure $ Rule sym expr
    processLoad _ x = pure x
