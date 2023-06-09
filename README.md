@@ -17,6 +17,7 @@ Then this is equivalent to:
     another_symbol = "option1" | "option2" | "option3"
 
 Commands:
-	load: Loads a BNF file into memory
-	gen: Generate a symbol using file in memory
-	run: Temporarily load a file and run any !commands contained within it
+	
+* load: Loads a BNF file into memory
+* gen: Generate a symbol using file in memory
+* run: Temporarily load a file and run any !commands contained within it
