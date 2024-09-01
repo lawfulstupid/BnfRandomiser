@@ -34,7 +34,7 @@ literalParser = aux '"' <|> aux '\'' where
 backRefParser :: (MonadPlus m, Foldable m) => Parser m Char Int
 backRefParser = do
    match '$'
-   read <$> greedy (some digit)
+   anyInt
 
 hasBackRef :: Term -> Bool
 hasBackRef t = case t of

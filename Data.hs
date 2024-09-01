@@ -12,6 +12,8 @@ import BnfRandomiser.Data.Expression
 import BnfRandomiser.Data.Sequence
 import BnfRandomiser.Data.Term
 import BnfRandomiser.Data.Symbol
+import BnfRandomiser.Data.Weight
+import AbLib.Data.Extended
 
 import qualified Data.List as List
 import Data.Map.Strict (Map, (!?))
@@ -28,7 +30,8 @@ class Randomise a where
 
 instance Randomise Expression where
    randomise mem (Expr opts) = do
-      seq <- pickWeighted getWeight opts
+      let weightFn = if all isFinite $ map getWeight opts then getWeight else getWeightInfinite
+      seq <- pickWeighted weightFn opts
       randomise mem seq
 
 instance Randomise Sequence where

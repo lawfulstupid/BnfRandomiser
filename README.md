@@ -37,9 +37,11 @@ Then this is equivalent to:
 
 Each sequence may be given an explicit weighting for random generation. This is done by appending a colon followed by an integer:
 
-	long_string = 'x' long_string : 2 | ''
+	long_string = 'x' long_string :2 | ''
 
 Sequences not assigned an explicit weight will have a weight of 1.
+
+Sequences marked with `:inf` will have infinite weight. Infinitely-weighted sequences will always be randomly chosen over finitely-weighted sequences, and if there are multiple infinite-weight sequences to choose from in an expression, one will be chosen uniformly at random.
 
 
 ## Back References
