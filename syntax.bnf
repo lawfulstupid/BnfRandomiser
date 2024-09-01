@@ -1,12 +1,14 @@
 syntax = line | line syntax -- structure for the whole file
 line = opt-ws line-content opt-ws eol
 line-content = opt-ws | rule | '!' opt-ws command
-rule = symbol opt-ws '=' opt-ws expression
+rule = symbol opt-ws '=' opt-ws expression | symbol opt-ws '<-' opt-ws string
 expression = sequence | sequence opt-ws '|' opt-ws expression
 sequence = term | term ws sequence
-term = symbol | literal
+term = symbol | literal | backref
 symbol = letter | symbol symchar: 5
 literal = "'" string1 "'" | '"' string2 '"'
+backref = '$' digit | backref digit
+string = string1 | string2
 string1 = '' | char1 string1
 string2 = '' | char2 string2
 letter <- "letters.txt"
