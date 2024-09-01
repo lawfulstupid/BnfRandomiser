@@ -29,13 +29,19 @@ instance Randomise Expression where
       randomise mem seq
 
 instance Randomise Sequence where
-   randomise mem (Seq terms _) = fmap concat $ sequence $ map (randomise mem) terms
+   randomise mem (Seq terms _) = let
+      termsIO = map (\t -> if isBackRef t then pure t else Lit <$> randomise mem t) terms
+      in do
+         termsGen <- sequence termsIO
+         let eval t = case t of { Lit s -> s; Ref n -> eval (termsGen !! (n-1)) }
+         pure $ concat $ map eval termsGen
 
 instance Randomise Term where
    randomise _ (Lit str) = pure str
    randomise mem (Sym ident) = case mem !? ident of
       Nothing -> errorWithoutStackTrace ("Symbol '" ++ ident ++ "' not defined!")
       Just def -> randomise mem def
+   randomise _ (Ref n) = errorWithoutStackTrace "Cannot randomise a back reference! (developer error)"
 
 type Ruleset = Map Symbol Expression
 type CommandSet = [(CommandType, Args)]
