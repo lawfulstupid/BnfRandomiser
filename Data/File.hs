@@ -62,12 +62,10 @@ instance (MonadPlus m, Foldable m) => Parse m Char Line where
 instance MonadPlus m => Parse m Char CommandType where
    parser = match "generate" >> pure Generate
 
-fileParser :: (MonadPlus m, Foldable m) => Parser m Char [Line]
-fileParser = do
-   optional whitespace
-   lines <- many (parser <* optional whitespace)
-   eof
-   pure lines
-
 parseFile :: String -> [Line]
-parseFile = fullParseUsing fileParser
+parseFile file = map fullParse
+   $ filter (not . null)
+   $ map strip
+   $ lines file
+   where
+   strip = dropWhile isSpace . dropWhileEnd isSpace
