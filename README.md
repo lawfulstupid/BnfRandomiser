@@ -86,3 +86,4 @@ Double dashes (--) and any characters following them until the end of the line w
 * load: Loads a BNF file into memory
 * gen: Generate a symbol using file in memory
 * run: Temporarily load a file and run any !commands contained within it
+* eval: Temporarily load a single rule and generate a string

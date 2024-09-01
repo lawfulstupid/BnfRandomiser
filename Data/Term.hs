@@ -36,6 +36,11 @@ backRefParser = do
    match '$'
    read <$> greedy (some digit)
 
-isBackRef :: Term -> Bool
-isBackRef (Ref _) = True
-isBackRef _ = False
+hasBackRef :: Term -> Bool
+hasBackRef t = case t of
+   Ref _ -> True
+   Lit _ -> False
+   Sym _ -> False
+   Opt r -> hasBackRef r
+   Any r -> hasBackRef r
+   Mny r -> hasBackRef r

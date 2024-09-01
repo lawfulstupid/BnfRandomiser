@@ -7,6 +7,7 @@ import YAMP.Module
 
 import Data.Map.Strict (Map, (!), (!?))
 import qualified Data.Map.Strict as Map
+import Data.Char (isAlphaNum)
 
 memory :: IORef Ruleset
 memory = unsafePerformIO $ newIORef Map.empty
@@ -36,3 +37,10 @@ run path = do
    execute Generate [symbol] mem = do
       output <- randomise mem (Sym symbol)
       putStrLn output
+
+-- parses a single rule and generates
+eval :: String -> IO String
+eval rule = do
+   let primarySymbol = takeWhile (\c -> isAlphaNum c || c `elem` "_-") rule
+   (mem, _) <- processFile undefined $ parseFile rule
+   randomise mem (Sym primarySymbol)

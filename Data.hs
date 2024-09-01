@@ -21,6 +21,7 @@ import System.Random (randomIO)
 import AbLib.System.Random (pick, pickWeighted)
 import Data.Map.Strict (Map, (!), (!?))
 import Control.Monad (liftM2)
+import Data.Maybe
 
 class Randomise a where
    randomise :: Ruleset -> a -> IO String
@@ -31,24 +32,32 @@ instance Randomise Expression where
       randomise mem seq
 
 instance Randomise Sequence where
-   randomise mem (Seq terms _) = let
-      termsIO = map (\t -> if isBackRef t then pure t else Lit <$> randomise mem t) terms
-      in do
-         termsGen <- sequence termsIO
-         let eval t = case t of { Lit s -> s; Ref n -> eval (termsGen !! (n-1)) }
-         pure $ concat $ map eval termsGen
+   randomise mem (Seq terms _) = do
+      maybeLits <- sequence $ map (randomiseTerm mem []) terms
+      let terms' = map (\i -> maybe (terms !! i) Lit (maybeLits !! i)) [0 .. length terms - 1]
+      let justList = map (maybe undefined id)
+      let lits = justList maybeLits
+      termsGen <- justList <$> (sequence $ map (randomiseTerm mem lits) terms')
+      pure $ concat termsGen
 
 instance Randomise Term where
-   randomise _ (Lit str) = pure str
-   randomise mem (Sym ident) = case mem !? ident of
-      Nothing -> errorWithoutStackTrace ("Symbol '" ++ ident ++ "' not defined!")
-      Just def -> randomise mem def
-   randomise _ (Ref n) = errorWithoutStackTrace "Cannot randomise a back reference! (developer error)"
-   randomise mem (Opt t) = do
+   randomise mem term = fromJust <$> randomiseTerm mem [] term
+
+randomiseTerm :: Ruleset -> [String] -> Term -> IO (Maybe String)
+randomiseTerm mem lits term = case term of
+   Lit str -> pure (Just str)
+   Sym sym -> case mem !? sym of
+      Nothing -> errorWithoutStackTrace ("Symbol '" ++ sym ++ "' not defined!")
+      Just def -> Just <$> randomise mem def
+   Ref n -> pure $ if null lits then Nothing else Just (lits !! (n-1))
+   Opt t -> do
       skip <- randomIO
-      if skip then pure "" else randomise mem t
-   randomise mem (Any t) = randomise mem (Opt $ Mny t)
-   randomise mem (Mny t) = liftM2 (++) (randomise mem t) (randomise mem (Any t))
+      if skip then pure (Just "") else randomiseTerm mem lits t
+   Any t -> randomiseTerm mem lits (Opt $ Mny t)
+   Mny t -> do
+      head <- randomiseTerm mem lits t
+      rest <- randomiseTerm mem lits (Any t)
+      pure $ liftM2 (++) head rest
 
 type Ruleset = Map Symbol Expression
 type CommandSet = [(CommandType, Args)]
