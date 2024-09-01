@@ -5,17 +5,23 @@ module BnfRandomiser.Data.Term where
 import BnfRandomiser.Data.Symbol
 import YAMP.Module
 
-data Term = Sym Symbol | Lit String | Ref Int
+data Term = Sym Symbol | Lit String | Ref Int | Opt Term | Any Term | Mny Term
    deriving (Show, Eq)
 
 instance (MonadPlus m, Foldable m) => Parse m Char Term where
    parser = do
       nextChar <- peek anyChar
-      case nextChar of
+      term <- case nextChar of
          '"' -> Lit <$> literalParser
          '\'' -> Lit <$> literalParser
          '$' -> Ref <$> backRefParser
          _ -> Sym <$> symbolParser
+      mod <- peek anyChar |> pure ' '
+      case mod of
+         '?' -> anyChar >> pure (Opt term)
+         '*' -> anyChar >> pure (Any term)
+         '+' -> anyChar >> pure (Mny term)
+         _ -> pure term
 
 literalParser :: (MonadPlus m, Foldable m) => Parser m Char String
 literalParser = aux '"' <|> aux '\'' where

@@ -17,8 +17,10 @@ import qualified Data.List as List
 import Data.Map.Strict (Map, (!?))
 import qualified Data.Map.Strict as Map
 
-import AbLib.System.Random (pickWeighted)
+import System.Random (randomIO)
+import AbLib.System.Random (pick, pickWeighted)
 import Data.Map.Strict (Map, (!), (!?))
+import Control.Monad (liftM2)
 
 class Randomise a where
    randomise :: Ruleset -> a -> IO String
@@ -42,6 +44,11 @@ instance Randomise Term where
       Nothing -> errorWithoutStackTrace ("Symbol '" ++ ident ++ "' not defined!")
       Just def -> randomise mem def
    randomise _ (Ref n) = errorWithoutStackTrace "Cannot randomise a back reference! (developer error)"
+   randomise mem (Opt t) = do
+      skip <- randomIO
+      if skip then pure "" else randomise mem t
+   randomise mem (Any t) = randomise mem (Opt $ Mny t)
+   randomise mem (Mny t) = liftM2 (++) (randomise mem t) (randomise mem (Any t))
 
 type Ruleset = Map Symbol Expression
 type CommandSet = [(CommandType, Args)]

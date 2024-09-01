@@ -1,25 +1,25 @@
-syntax = line | line syntax -- structure for the whole file
-line = opt-ws line-content opt-ws eol
-line-content = opt-ws | rule | '!' opt-ws command
-rule = symbol opt-ws '=' opt-ws expression | symbol opt-ws '<-' opt-ws string
-expression = sequence | sequence opt-ws '|' opt-ws expression
-sequence = term | term ws sequence
+syntax = line* -- structure for the whole file
+line = ws? line-content ws? eol
+line-content = ws? | rule | command
+rule = symbol ws? '=' ws? expression | symbol ws? '<-' ws? string
+expression = sequence | sequence ws? '|' ws? expression
+sequence = term term-mod? | term term-mod? ws sequence
 term = symbol | literal | backref
-symbol = letter | symbol symchar: 5
+term-mod = '?' | '+' | '*'
+symbol = letter | symbol symchar
 literal = "'" string1 "'" | '"' string2 '"'
-backref = '$' digit | backref digit
+backref = '$' digit+
 string = string1 | string2
-string1 = '' | char1 string1
-string2 = '' | char2 string2
-letter <- "letters.txt"
+string1 = char1*
+string2 = char2*
+letter <- letters.txt
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 symchar = letter :50 | digit :50 | '_' :1 | '-' :1
 anychar = symchar:10 | '|' | ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' | '*' | '+' | ',' | '.' | '/' | ':' | ';' | '>' | '=' | '<' | '?' | '@' | '[' | '\' | ']' | '^' | '`' | '{' | '}' | '~'
 char1 = anychar | '"'
 char2 = anychar | "'"
-ws = ' ' opt-ws
-opt-ws = '' | ws
+ws = ' '+
 eol = '\n' | '\r\f'
-command = 'generate' ws symbol
+command = '!' ws? 'generate' ws symbol
 
 !generate rule -- when this file is run, a randomly generated rule will be output

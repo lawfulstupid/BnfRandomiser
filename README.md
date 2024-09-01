@@ -51,6 +51,36 @@ A term may also be a reference to another term in the sequence, indicated by a d
 The first term in the sequence has index 1, and so on.
 
 
+## Term Modifiers
+
+A term may be modified by one the following characters immediately following it:
+
+* ? marks a term as optional
+* + marks a term as repeatable
+* \* marks a term as repeatable and optional
+
+Examples:
+
+	s1 = a b? c
+	s2 = a b+ c
+	s3 = a b\* c
+
+The above is equivalent to the following:
+
+	s1 = a b c | a c
+	s2 = a s2_b c
+	s2_b = b | b s2_b
+	s3 = a s3_b c
+	s3_b = '' | b s3_b
+
+
+## Comments
+
+Double dashes (--) and any characters following them until the end of the line will be ignored:
+
+	symbol = option1 | option2 -- this is a comment
+
+
 ## Commands
 	
 * load: Loads a BNF file into memory
